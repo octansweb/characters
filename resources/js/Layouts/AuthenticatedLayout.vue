@@ -31,11 +31,13 @@ function closeSidebar() {
                     Characters
                     </Link>
                     <!-- Close button on mobile -->
-                    <button @click="closeSidebar" class="absolute top-4 right-4 sm:hidden">
-                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
+                    <button @click="closeSidebar" class="absolute top-6 right-4 sm:hidden text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
                         </svg>
+
                     </button>
                 </div>
 
@@ -44,7 +46,8 @@ function closeSidebar() {
                     <!-- Navigation -->
                     <ul class="space-y-2 px-3 py-4">
                         <li>
-                            <Link href="#" class="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100">
+                            <Link href="#"
+                                class="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100">
                             <!-- Icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-4">
@@ -55,7 +58,8 @@ function closeSidebar() {
                         </li>
 
                         <li>
-                            <Link href="#" class="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100">
+                            <Link href="#"
+                                class="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100">
                             <!-- Icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-4">
