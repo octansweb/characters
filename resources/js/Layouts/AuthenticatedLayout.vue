@@ -69,7 +69,7 @@ onMounted(() => {
                     <!-- Navigation -->
                     <ul class="space-y-2 px-3 py-4">
                         <li>
-                            <Link href="#"
+                            <Link :href="route('characters.create')"
                                 class="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100">
                             <!-- Icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
