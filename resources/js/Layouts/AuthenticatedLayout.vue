@@ -1,8 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { useToast } from "vue-toastification";
 
 const showingSidebar = ref(false);
+const toast = useToast();
+const { props } = usePage(); // Access page props
+
+console.log('CurrentProps', { props });
 
 function toggleSidebar() {
     showingSidebar.value = !showingSidebar.value;
@@ -11,6 +16,24 @@ function toggleSidebar() {
 function closeSidebar() {
     showingSidebar.value = false;
 }
+
+onMounted(() => {
+    // Check if there is a flash message
+    if (props.flash && props.flash.success) {
+        console.log('Sending successs flash message');
+        toast.success(props.flash.success); // Display the success toast
+    }
+
+    // If you have other types of flash messages
+    if (props.flash && props.flash.error) {
+        toast.error(props.flash.error);
+    }
+
+    // For generic messages
+    if (props.flash && props.flash.message) {
+        toast(props.flash.message);
+    }
+});
 </script>
 
 <template>
@@ -84,9 +107,6 @@ function closeSidebar() {
                         <!-- Logout Button -->
                         <li>
                             <form method="POST" :action="route('logout')">
-                                <!-- CSRF Token -->
-                                <input type="hidden" name="_token" :value="csrfToken" />
-
                                 <button type="submit"
                                     class="flex items-center w-full p-2 text-gray-900 rounded-lg hover:bg-gray-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

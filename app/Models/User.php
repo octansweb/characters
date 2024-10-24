@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Character;
 use App\Models\ChatSession;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function chatSessions()
     {
         return $this->hasMany(ChatSession::class);
+    }
+
+    public function characters()
+    {
+        return $this->hasMany(Character::class);
     }
 }
