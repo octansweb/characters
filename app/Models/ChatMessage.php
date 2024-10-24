@@ -10,6 +10,8 @@ class ChatMessage extends Model
     /** @use HasFactory<\Database\Factories\ChatMessageFactory> */
     use HasFactory;
 
+    protected $guarded = [];
+
     public function chatSession()
     {
         return $this->belongsTo(ChatSession::class);

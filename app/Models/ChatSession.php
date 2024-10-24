@@ -12,6 +12,8 @@ class ChatSession extends Model
     /** @use HasFactory<\Database\Factories\ChatSessionFactory> */
     use HasFactory;
 
+    protected $guarded = [];
+
     public function messages()
     {
         return $this->hasMany(ChatMessage::class);

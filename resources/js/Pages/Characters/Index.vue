@@ -1,6 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 
 const props = defineProps({
     characters: {
@@ -66,6 +68,15 @@ const props = defineProps({
                             <p class="text-sm text-gray-500">
                                 Status: {{ character.is_public ? 'Public' : 'Private' }}
                             </p>
+                        </div>
+
+
+                        <div class="flex justify-end mt-4">
+                            <Link :href="route('characters.chat.show', character.id)">
+                                <PrimaryButton class="mr-2">Start Chat</PrimaryButton>
+                            </Link>
+
+                            <DangerButton>Delete</DangerButton>
                         </div>
                     </div>
                     <!-- End of Character Card -->
