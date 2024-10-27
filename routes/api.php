@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\API\CharactersController;
+use App\Http\Controllers\API\CharacterChatController;
 
 
 Route::post('/sanctum/token', function (Request $request) {
@@ -28,14 +29,12 @@ Route::post('/sanctum/token', function (Request $request) {
     ];
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) { return $request->user(); });
     Route::get('/characters', [CharactersController::class, 'index']);
     Route::post('/characters', [CharactersController::class, 'store']);
-    // Other routes can be added here
+
+    Route::get('/characters/{character}/chat', [CharacterChatController::class, 'show']);
+    Route::post('/characters/{character}/stream', [CharacterChatController::class, 'stream']);
 });
