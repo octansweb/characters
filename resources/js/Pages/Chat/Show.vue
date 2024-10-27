@@ -96,6 +96,33 @@ const sendMessage = async () => {
     }
 };
 
+let playingMessage = ref(null);
+let audio = null;
+
+let playMessage = (message) => {
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+
+    audio = new Audio(message.speech_file_path);
+    playingMessage.value = message.id;
+
+    // Play the audio file
+    audio.play().then(() => {
+        console.log('Playing audio:', message.speech_file_path);
+    }).catch(error => {
+        console.error('Error playing audio:', error);
+    });
+
+    // Reset playingMessage.value to null when the audio finishes playing
+    audio.addEventListener('ended', () => {
+        playingMessage.value = null;
+        console.log('Audio playback finished.');
+    });
+};
+
+
 </script>
 
 <template>
@@ -109,11 +136,11 @@ const sendMessage = async () => {
             </h2>
         </template>
 
-        <div class="">
+        <div>
             <div class="flex justify-between items-center border-b border-gray-100  p-4">
                 <div class="flex items-center">
-                    <img :src="character.avatar_url || 'https://via.placeholder.com/40'"
-                        alt="Assistant Avatar" class="w-10 h-10 rounded-full mr-2" />
+                    <img :src="character.avatar_url || 'https://via.placeholder.com/40'" alt="Assistant Avatar"
+                        class="w-10 h-10 rounded-full mr-2" />
 
                     <div>
                         <div class="text-lg font-medium" v-text="character.name"></div>
@@ -136,9 +163,26 @@ const sendMessage = async () => {
                             'justify-start': msg.role !== 'user',
                         }">
                             <!-- Avatar for assistant -->
-                            <img v-if="msg.role === 'assistant'"
-                                :src="character.avatar_url || 'https://via.placeholder.com/40'" alt="Assistant Avatar"
-                                class="w-10 h-10 rounded-full mr-2" />
+                            <div v-if="msg.role === 'assistant'" class="">
+                                <img :src="character.avatar_url || 'https://via.placeholder.com/40'"
+                                    alt="Assistant Avatar" class="w-10 h-10 rounded-full mr-2" />
+
+
+
+                                
+                                <div class="flex justify-center mt-2 mr-2">
+                                    <!-- Play icon -->
+                                    <svg v-if="playingMessage !== msg.id" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                        @click.prevent="playMessage(msg)"
+                                        class="size-6 cursor-pointer">
+                                        <path fill-rule="evenodd"
+                                            d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <!-- Play icon -->
+
+                                </div>
+                            </div>
 
                             <!-- Message Bubble -->
                             <div class="max-w-md px-4 py-2 rounded-lg" :class="{
