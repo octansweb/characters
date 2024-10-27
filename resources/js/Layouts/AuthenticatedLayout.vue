@@ -155,7 +155,7 @@ onMounted(() => {
             </button>
 
             <!-- Content -->
-            <div class="p-4">
+            <div class="">
                 <!-- Your page content goes here -->
                 <slot />
             </div>

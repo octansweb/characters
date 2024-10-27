@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref, onMounted, nextTick } from 'vue';
 
 const props = defineProps({
@@ -98,6 +99,7 @@ const sendMessage = async () => {
 </script>
 
 <template>
+
     <Head :title="`Chat with ${character.name}`" />
 
     <AuthenticatedLayout>
@@ -107,40 +109,42 @@ const sendMessage = async () => {
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-4xl mx-auto bg-white shadow sm:rounded-lg">
+        <div class="">
+            <div class="flex justify-between items-center border-b border-gray-100  p-4">
+                <div class="flex items-center">
+                    <img :src="character.avatar_url || 'https://via.placeholder.com/40'"
+                        alt="Assistant Avatar" class="w-10 h-10 rounded-full mr-2" />
+
+                    <div>
+                        <div class="text-lg font-medium" v-text="character.name"></div>
+                        <div class="text-xs" v-text="'By: ' + character.user.name"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <PrimaryButton>Clear Chat</PrimaryButton>
+                </div>
+            </div>
+            <div class="bg-white">
                 <!-- Adjusted the height to fill available space -->
-                <div class="flex flex-col h-[calc(100vh-16rem)]">
+                <!-- <div class="flex flex-col h-[calc(100vh-16rem)]"> -->
+                <div class="flex flex-col h-[90vh]">
                     <!-- Chat Messages -->
-                    <div
-                        ref="messagesContainer"
-                        class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50"
-                    >
-                        <div
-                            v-for="(msg, index) in messages"
-                            :key="index"
-                            class="flex"
-                            :class="{
-                                'justify-end': msg.role === 'user',
-                                'justify-start': msg.role !== 'user',
-                            }"
-                        >
+                    <div ref="messagesContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+                        <div v-for="(msg, index) in messages" :key="index" class="flex" :class="{
+                            'justify-end': msg.role === 'user',
+                            'justify-start': msg.role !== 'user',
+                        }">
                             <!-- Avatar for assistant -->
-                            <img
-                                v-if="msg.role === 'assistant'"
-                                :src="character.avatar_url || 'https://via.placeholder.com/40'"
-                                alt="Assistant Avatar"
-                                class="w-10 h-10 rounded-full mr-2"
-                            />
+                            <img v-if="msg.role === 'assistant'"
+                                :src="character.avatar_url || 'https://via.placeholder.com/40'" alt="Assistant Avatar"
+                                class="w-10 h-10 rounded-full mr-2" />
 
                             <!-- Message Bubble -->
-                            <div
-                                class="max-w-md px-4 py-2 rounded-lg"
-                                :class="{
-                                    'bg-blue-500 text-white': msg.role === 'user',
-                                    'bg-white text-gray-800 border': msg.role !== 'user',
-                                }"
-                            >
+                            <div class="max-w-md px-4 py-2 rounded-lg" :class="{
+                                'bg-blue-500 text-white': msg.role === 'user',
+                                'bg-white text-gray-800 border': msg.role !== 'user',
+                            }">
                                 <p class="whitespace-pre-wrap">{{ msg.content }}</p>
                             </div>
 
@@ -152,16 +156,10 @@ const sendMessage = async () => {
                     <!-- Message Input -->
                     <div class="border-t p-4">
                         <form @submit.prevent="sendMessage" class="flex">
-                            <textarea
-                                v-model="message"
-                                rows="1"
-                                placeholder="Type your message..."
-                                class="flex-1 resize-none border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            ></textarea>
-                            <button
-                                type="submit"
-                                class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
+                            <textarea v-model="message" rows="1" placeholder="Type your message..."
+                                class="flex-1 resize-none border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <button type="submit"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 Send
                             </button>
                         </form>
@@ -177,6 +175,7 @@ const sendMessage = async () => {
 .messagesContainer::-webkit-scrollbar {
     width: 8px;
 }
+
 .messagesContainer::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;

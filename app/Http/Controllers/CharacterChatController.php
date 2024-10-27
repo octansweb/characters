@@ -45,6 +45,8 @@ class CharacterChatController extends Controller
             // Generate the assistant's first response (we'll handle this via streaming)
         }
 
+        $character->load('user');
+
         // Render the view
         return Inertia::render('Chat/Show', [
             'character' => $character,
