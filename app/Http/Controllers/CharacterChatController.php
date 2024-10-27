@@ -134,11 +134,13 @@ class CharacterChatController extends Controller
                     }
         
                     // After streaming is complete, save assistant's message
-                    ChatMessage::create([
+                    $characterChatMessage = ChatMessage::create([
                         'chat_session_id' => $chatSession->id,
                         'role' => 'assistant',
                         'content' => $assistantContent,
                     ]);
+
+                    $characterChatMessage->saveSpeechFile();
         
                 } catch (Exception $e) {
                     Log::error('OpenAI API Error: ' . $e->getMessage());
