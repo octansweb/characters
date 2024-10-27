@@ -112,8 +112,8 @@ class CharacterChatController extends Controller
                 try {
                     // Call OpenAI API with streaming
                     $openAIStream = OpenAI::chat()->createStreamed([
-                        'model' => 'gpt-3.5-turbo', // Use a valid model
-                        'messages' => $messages,
+                        'model' => 'gpt-4o-mini', // Use a valid model
+                        'messages' => $messages
                     ]);
         
                     foreach ($openAIStream as $response) {

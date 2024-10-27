@@ -45,11 +45,48 @@ class CharacterChatController extends Controller
         }
 
         // Return JSON response
-        return response()->json([
-            'character' => $character,
-            'conversation' => $conversation->where('role', '!=', 'system')->values(),
-            'chatSessionId' => $chatSession->id,
-        ], 200);
+        return response()->stream(function () use ($messages, $chatSession) {
+            // Set headers and disable output buffering
+
+            $assistantContent = '';
+
+            try {
+                // Call OpenAI API with streaming
+                $openAIStream = OpenAI::chat()->createStreamed([
+                    'model' => 'gpt-4o-mini',
+                    'messages' => $messages,
+                    'stream' => true,
+                ]);
+
+                foreach ($openAIStream as $response) {
+                    $deltaContent = $response->choices[0]->delta->content ?? '';
+
+                    if ($deltaContent !== '') {
+                        $assistantContent .= $deltaContent;
+
+                        // Output the content directly
+                        echo $deltaContent;
+
+                        // Flush the output
+                        ob_flush();
+                        flush();
+                    }
+                }
+
+                // After streaming is complete, save assistant's message
+                ChatMessage::create([
+                    'chat_session_id' => $chatSession->id,
+                    'role' => 'assistant',
+                    'content' => $assistantContent,
+                ]);
+            } catch (Exception $e) {
+                // Error handling
+            }
+        }, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no',
+        ]);
     }
 
     public function stream(Character $character, Request $request)
@@ -94,7 +131,7 @@ class CharacterChatController extends Controller
         try {
             // Call OpenAI API without streaming
             $response = OpenAI::chat()->create([
-                'model' => 'gpt-3.5-turbo',
+                'model' => 'gpt-4o-mini',
                 'messages' => $messages,
             ]);
 
@@ -111,7 +148,6 @@ class CharacterChatController extends Controller
             return response()->json([
                 'message' => $assistantContent,
             ], 200);
-
         } catch (Exception $e) {
             Log::error('OpenAI API Error: ' . $e->getMessage());
             return response()->json(['message' => 'Error communicating with the AI assistant.'], 500);
