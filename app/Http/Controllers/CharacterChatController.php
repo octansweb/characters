@@ -61,27 +61,25 @@ class CharacterChatController extends Controller
         if ($character->user_id !== $request->user()->id && !$character->is_public) {
             abort(403, 'Unauthorized action.');
         }
-
+    
         // Find or create the chat session
-        $chatSession = ChatSession::firstOrCreate(
-            [
-                'user_id' => $request->user()->id,
-                'character_id' => $character->id,
-            ]
-        );
-
+        $chatSession = ChatSession::firstOrCreate([
+            'user_id' => $request->user()->id,
+            'character_id' => $character->id,
+        ]);
+    
         // Validate user's message
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
-
+    
         // Save user's message
         ChatMessage::create([
             'chat_session_id' => $chatSession->id,
             'role' => 'user',
             'content' => $request->input('message'),
         ]);
-
+    
         // Retrieve messages for OpenAI API
         $messages = $chatSession->messages()
             ->orderBy('created_at')
@@ -93,70 +91,86 @@ class CharacterChatController extends Controller
                 ];
             })
             ->toArray();
-
-            return response()->stream(function () use ($messages, $chatSession) {
-                // Disable output buffering
-                @ini_set('output_buffering', 'off');
-                @ini_set('zlib.output_compression', 'off');
-                @ini_set('implicit_flush', '1');
-                for ($i = 0; $i < ob_get_level(); $i++) {
-                    ob_end_flush();
-                }
-                ob_implicit_flush(1);
-        
-                // Set headers
-                header('Content-Type: text/plain; charset=utf-8');
-                header('Cache-Control: no-cache');
-                header('X-Accel-Buffering: no'); // Disable buffering for nginx
-        
-                $assistantContent = '';
-        
-                try {
-                    // Call OpenAI API with streaming
-                    $openAIStream = OpenAI::chat()->createStreamed([
-                        'model' => 'gpt-4o-mini', // Use a valid model
-                        'messages' => $messages
-                    ]);
-        
-                    foreach ($openAIStream as $response) {
-                        $deltaContent = $response->choices[0]->delta->content ?? '';
-        
-                        if ($deltaContent !== '') {
-                            $assistantContent .= $deltaContent;
-        
-                            // Output the content directly
-                            echo $deltaContent;
-        
-                            // Flush the output
-                            if (ob_get_level() > 0) {
-                                ob_flush();
-                            }
-                            flush();
+    
+        return response()->stream(function () use ($messages, $chatSession) {
+            // Disable output buffering
+            @ini_set('output_buffering', 'off');
+            @ini_set('zlib.output_compression', 'off');
+            @ini_set('implicit_flush', '1');
+            for ($i = 0; $i < ob_get_level(); $i++) {
+                ob_end_flush();
+            }
+            ob_implicit_flush(1);
+    
+            // Set headers
+            header('Content-Type: text/plain; charset=utf-8');
+            header('Cache-Control: no-cache');
+            header('X-Accel-Buffering: no'); // Disable buffering for nginx
+    
+            $assistantContent = '';
+    
+            try {
+                // Call OpenAI API with streaming
+                $openAIStream = OpenAI::chat()->createStreamed([
+                    'model' => 'gpt-4o-mini', // Use a valid model
+                    'messages' => $messages,
+                ]);
+    
+                foreach ($openAIStream as $response) {
+                    $deltaContent = $response->choices[0]->delta->content ?? '';
+    
+                    if ($deltaContent !== '') {
+                        $assistantContent .= $deltaContent;
+    
+                        // Output the content directly
+                        echo $deltaContent;
+    
+                        // Flush the output
+                        if (ob_get_level() > 0) {
+                            ob_flush();
                         }
+                        flush();
                     }
-        
-                    // After streaming is complete, save assistant's message
-                    $characterChatMessage = ChatMessage::create([
-                        'chat_session_id' => $chatSession->id,
-                        'role' => 'assistant',
-                        'content' => $assistantContent,
-                    ]);
-
-                    $characterChatMessage->saveSpeechFile();
-        
-                } catch (Exception $e) {
-                    Log::error('OpenAI API Error: ' . $e->getMessage());
-                    echo "Error communicating with the AI assistant.";
-                    if (ob_get_level() > 0) {
-                        ob_flush();
-                    }
-                    flush();
                 }
-            }, 200, [
-                'Content-Type' => 'text/plain; charset=utf-8',
-                'Cache-Control' => 'no-cache',
-                'X-Accel-Buffering' => 'no',
-            ]);
-        
+    
+                // After streaming is complete, save assistant's message
+                $characterChatMessage = ChatMessage::create([
+                    'chat_session_id' => $chatSession->id,
+                    'role' => 'assistant',
+                    'content' => $assistantContent,
+                ]);
+    
+                // Generate the speech file and update the message with the file path
+                $speechPath = $characterChatMessage->saveSpeechFile();
+    
+                // Output a separator to signal the end of content streaming
+                echo "\n\n--END--\n\n";
+    
+                // Send final JSON response with message ID and audio path
+                echo json_encode([
+                    'id' => $characterChatMessage->id,
+                    'speech_file_path' => $speechPath,
+                ]);
+    
+                if (ob_get_level() > 0) {
+                    ob_flush();
+                }
+                flush();
+    
+            } catch (Exception $e) {
+                Log::error('OpenAI API Error: ' . $e->getMessage());
+                echo "Error communicating with the AI assistant.";
+                if (ob_get_level() > 0) {
+                    ob_flush();
+                }
+                flush();
+            }
+        }, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no',
+        ]);
     }
+    
+    
 }
