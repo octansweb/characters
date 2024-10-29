@@ -3,11 +3,16 @@
 namespace App\Services;
 
 use Aws\Polly\PollyClient;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class Polly {
     public static function generateSpeech($text, $fileName = null, $gender = 'Male', $voiceId = null, $engine = 'generative')
     {
+        Log::debug('polly:region', [
+            'region' => env('AWS_DEFAULT_REGION'),
+        ]);
+
         // Initialize Polly client
         $client = new PollyClient([
             'region' => env('AWS_DEFAULT_REGION'),
