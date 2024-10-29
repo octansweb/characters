@@ -2,16 +2,27 @@
 
 namespace App\Services;
 
+use Aws\Polly\PollyClient;
 use Illuminate\Support\Facades\Storage;
 
 class Polly {
-    public static function generateSpeech($text, $fileName = null, $gender = 'Female', $voiceId = null, $engine = 'generative')
+    public static function generateSpeech($text, $fileName = null, $gender = 'Male', $voiceId = null, $engine = 'generative')
     {
+        // Initialize Polly client
+        $client = new PollyClient([
+            'region' => env('AWS_DEFAULT_REGION'),
+            'version' => 'latest',
+            'credentials' => [
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            ]
+        ]);
+
         // Determine the voice based on gender if no specific voiceId is provided
         if (is_null($voiceId)) {
             $voiceId = $gender === 'Male' 
                 ? config('voices.defaultMale', 'Matthew') 
-                : config('voices.defaultFemale', 'Danielle');
+                : config('voices.defaultFemale', 'Joanna');
         }
 
         // Ensure the file name ends with .mp3
@@ -20,31 +31,27 @@ class Polly {
             $fileName .= '.mp3';
         }
 
-        // Temporary file path for the synthesized audio
-        $tempFilePath = sys_get_temp_dir() . '/' . $fileName;
+        try {
+            // Call Polly's synthesizeSpeech method
+            $result = $client->synthesizeSpeech([
+                'OutputFormat' => 'mp3',
+                'Text' => $text,
+                'VoiceId' => $voiceId,
+                'Engine' => $engine,
+            ]);
 
-        // Construct the AWS Polly CLI command with NTTS engine
-        $command = sprintf(
-            'aws polly synthesize-speech --engine %s --output-format mp3 --voice-id %s --text %s %s',
-            escapeshellarg($engine),
-            escapeshellarg($voiceId),
-            escapeshellarg($text),
-            escapeshellarg($tempFilePath)
-        );
+            // Save the audio stream to a temporary file
+            $tempFilePath = sys_get_temp_dir() . '/' . $fileName;
+            file_put_contents($tempFilePath, $result['AudioStream']);
 
-        // Execute the command
-        exec($command, $output, $returnVar);
-
-        // Check if the command was successful
-        if ($returnVar === 0) {
-            // Store the file on the public disk (ensuring a publicly accessible URL) and delete the temp file
+            // Store the file on the public disk and delete the temp file
             $storedFilePath = Storage::disk('public')->putFileAs('audio', $tempFilePath, $fileName);
             unlink($tempFilePath); // Remove the temporary file
 
             // Return the public URL to the stored file
             return Storage::disk('public')->url($storedFilePath);
-        } else {
-            return "An error occurred: " . implode("\n", $output);
+        } catch (\Exception $e) {
+            return "An error occurred: " . $e->getMessage();
         }
     }
 }

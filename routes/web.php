@@ -1,6 +1,7 @@
 <?php
 
 use Inertia\Inertia;
+use Aws\Polly\PollyClient;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
@@ -25,6 +26,26 @@ Route::get('/characters', [CharactersController::class, 'index'])->middleware(['
 Route::post('/characters', [CharactersController::class, 'store'])->middleware(['auth', 'verified'])->name('characters.store');
 Route::get('/characters/{character}/chat', [CharacterChatController::class, 'show'])->middleware(['auth', 'verified'])->name('characters.chat.show');
 Route::post('/characters/{character}/stream', [CharacterChatController::class, 'stream'])->name('characters.stream');
+
+Route::get('/test-polly', function () {
+    $client = new PollyClient([
+        'region' => env('AWS_DEFAULT_REGION'),
+        'version' => 'latest',
+        'credentials' => [
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        ]
+    ]);
+
+    $preSignedUrl = $client->createSynthesizeSpeechPreSignedUrl([
+        'OutputFormat' => 'mp3',
+        'Text' => 'Hello, this is a test message.',
+        'VoiceId' => 'Matthew',
+        'Engine' => 'generative',
+    ]);
+    
+    echo "Pre-signed URL: $preSignedUrl";
+});
 
 
 Route::middleware('auth')->group(function () {
