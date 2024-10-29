@@ -101,15 +101,19 @@ class CharacterChatController extends Controller
             $assistantContent = $response->choices[0]->message->content ?? '';
 
             // Save assistant's message
-            ChatMessage::create([
+            $characterChatMessage = ChatMessage::create([
                 'chat_session_id' => $chatSession->id,
                 'role' => 'assistant',
                 'content' => $assistantContent,
             ]);
 
+            // Generate the speech file and update the message with the file path
+            $speechPath = $characterChatMessage->saveSpeechFile();
+
             // Return the assistant's message
             return response()->json([
                 'message' => $assistantContent,
+                'speech_file_path' => $speechPath,
             ], 200);
 
         } catch (Exception $e) {
