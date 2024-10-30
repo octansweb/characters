@@ -8,10 +8,11 @@ import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
-    avatar_url: '',
     description: '',
     personality: '',
     is_public: true,
+    gender: '',  // Added gender field
+    avatar: null,  // Added avatar file
 });
 </script>
 
@@ -27,7 +28,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.post(route('characters.store'))" class="mt-6 space-y-6">
+        <form @submit.prevent="form.post(route('characters.store'), { forceFormData: true })" class="mt-6 space-y-6">
             <!-- Name Field -->
             <div>
                 <InputLabel for="name" value="Name" />
@@ -44,18 +45,18 @@ const form = useForm({
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <!-- Avatar URL Field -->
+            <!-- Avatar File Upload Field -->
             <div>
-                <InputLabel for="avatar_url" value="Avatar URL" />
+                <InputLabel for="avatar" value="Avatar" />
 
-                <TextInput
-                    id="avatar_url"
-                    type="url"
+                <input
+                    id="avatar"
+                    type="file"
                     class="mt-1 block w-full"
-                    v-model="form.avatar_url"
+                    @change="(e) => form.avatar = e.target.files[0]"
                 />
 
-                <InputError class="mt-2" :message="form.errors.avatar_url" />
+                <InputError class="mt-2" :message="form.errors.avatar" />
             </div>
 
             <!-- Description Field -->
@@ -82,6 +83,24 @@ const form = useForm({
                 ></textarea>
 
                 <InputError class="mt-2" :message="form.errors.personality" />
+            </div>
+
+            <!-- Gender Field -->
+            <div>
+                <InputLabel for="gender" value="Gender" />
+
+                <select
+                    id="gender"
+                    v-model="form.gender"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                >
+                    <option value="" disabled>Please select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+
+                <InputError class="mt-2" :message="form.errors.gender" />
             </div>
 
             <!-- Is Public Field -->
