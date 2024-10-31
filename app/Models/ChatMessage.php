@@ -23,7 +23,7 @@ class ChatMessage extends Model
         $character = $this->chatSession->character;
 
         // Generate speech using the Polly service
-        $speechPath = Polly::generateSpeech($this->content, 'speech_' . $this->id, $character->gender);
+        $speechPath = Polly::generateSpeech($this->content, 'speech_' . $this->id, $character->gender, $character->voice ?? null);
 
         $this->update([
             'speech_file_path' => $speechPath,

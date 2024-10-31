@@ -13,6 +13,7 @@ const form = useForm({
     is_public: true,
     gender: '',  // Added gender field
     avatar: null,  // Added avatar file
+    voice: '',
 });
 </script>
 
@@ -102,6 +103,29 @@ const form = useForm({
 
                 <InputError class="mt-2" :message="form.errors.gender" />
             </div>
+
+            <!-- Voice Field -->
+            <div>
+                <InputLabel for="voice" value="Voice" />
+
+                <select
+                    id="voice"
+                    v-model="form.voice"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                >
+                    <option value="" disabled>Please select</option>
+                    <option value="Matthew">Matthew - Male - en-US</option>
+                    <option value="Stephen">Stephen - Male - en-US</option>
+                    <option value="Olivia">Olivia - Female - en-AU</option>
+                    <option value="Amy">Amy - Female - en-GB</option>
+                    <option value="Danielle">Danielle - Female - en-US</option>
+                    <option value="Joanna">Joanna - Female - en-US</option>
+                    <option value="Ruth">Ruth - Female - en-US</option>
+                </select>
+
+                <InputError class="mt-2" :message="form.errors.voice" />
+            </div> 
 
             <!-- Is Public Field -->
             <div class="flex items-center">

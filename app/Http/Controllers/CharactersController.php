@@ -29,6 +29,7 @@ class CharactersController extends Controller
             'personality' => 'nullable|string',
             'is_public' => 'required|boolean',
             'gender' => 'required|string|in:Male,Female',  // Added gender validation
+            'voice' => 'required|string|in:Olivia,Amy,Danielle,Joanna,Matthew,Ruth,Stephen'
         ]);
     
         $avatar_url = null;
@@ -46,6 +47,7 @@ class CharactersController extends Controller
             'personality' => $request->personality,
             'is_public' => $request->is_public,
             'gender' => $request->gender,  // Save gender
+            'voice' => $request->voice,
         ]);
     
         return redirect()->route('characters.index')->with('success', 'Character created successfully.');
