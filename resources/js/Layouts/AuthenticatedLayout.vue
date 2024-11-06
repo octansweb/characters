@@ -7,7 +7,7 @@ const showingSidebar = ref(false);
 const toast = useToast();
 const { props } = usePage(); // Access page props
 
-console.log('CurrentProps', { props });
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 function toggleSidebar() {
     showingSidebar.value = !showingSidebar.value;
@@ -125,6 +125,9 @@ onMounted(() => {
                         <!-- Logout Button -->
                         <li>
                             <form method="POST" :action="route('logout')">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" :value="csrfToken">
+
                                 <button type="submit"
                                     class="flex items-center w-full p-2 text-gray-900 rounded-lg hover:bg-gray-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
