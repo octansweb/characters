@@ -26,9 +26,9 @@ class RegistrationController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // event(new Registered($user)); // Sends the email verification link
+        event(new Registered($user)); // Sends the email verification link
 
-        $user->sendEmailVerificationNotification();
+        // $user->sendEmailVerificationNotification();
         // $user->createToken($request->device_name)->plainTextToken;
 
         return response()->json([
