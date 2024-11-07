@@ -21,17 +21,18 @@ class GoogleLoginController extends Controller
     {
         $user = Socialite::driver('google')->user();
 
-        dd($user);
-        // $googleUser = Socialite::driver('google')->stateless()->user();
+        // Check if the user already exists by email:
+        $existingUser = User::whereEmail($user->email)->first();
+        if ($existingUser) {
+            // If we already have the user, simply log them in and redirect.
+            Auth::login($existingUser);
+            return redirect(route('dashboard'));
+        }
 
-        // dd($googleUser);
-        // $user = User::where('email', $googleUser->email)->first();
-        // if (!$user) {
-        //     $user = User::create(['name' => $googleUser->name, 'email' => $googleUser->email, 'password' => Hash::make(rand(100000, 999999))]);
-        // }
+        // Register a new user with random password
+        $newUser = User::create(['name' => $user->name, 'email' => $user->email, 'password' => Hash::make(rand(100000, 999999))]);
+        Auth::login($newUser);
 
-        // Auth::login($user);
-
-        // return redirect('/dashboard');
+        return redirect(route('dashboard'));
     }
 }
