@@ -31,7 +31,7 @@ Route::post('/sanctum/token', function (Request $request) {
     ];
 });
 
-Route::get('/register', [RegistrationController::class, 'store']);
+Route::post('/register', [RegistrationController::class, 'store']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
