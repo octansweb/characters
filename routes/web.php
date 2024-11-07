@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CharactersController;
+use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\CharacterChatController;
 
 Route::get('/', function () {
@@ -26,6 +27,9 @@ Route::get('/characters', [CharactersController::class, 'index'])->middleware(['
 Route::post('/characters', [CharactersController::class, 'store'])->middleware(['auth', 'verified'])->name('characters.store');
 Route::get('/characters/{character}/chat', [CharacterChatController::class, 'show'])->middleware(['auth', 'verified'])->name('characters.chat.show');
 Route::post('/characters/{character}/stream', [CharacterChatController::class, 'stream'])->name('characters.stream');
+
+Route::get('/google/redirect', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/google/callback', [GoogleLoginController::class, 'handleGoogleCallback'])->name('google.callback');
 
 Route::get('/test-polly', function () {
     $client = new PollyClient([
