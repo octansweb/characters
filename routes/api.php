@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UsersController;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\API\CharactersController;
+use App\Http\Controllers\API\RegistrationController;
 use App\Http\Controllers\API\CharacterChatController;
 
 
@@ -29,6 +30,8 @@ Route::post('/sanctum/token', function (Request $request) {
         'token' => $user->createToken($request->device_name)->plainTextToken
     ];
 });
+
+Route::get('/register', [RegistrationController::class, 'store']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
