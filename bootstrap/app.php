@@ -18,9 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Disable CSRF protection for specific routes
-        $middleware->validateCsrfTokens(except: [
-            '/api/register',
-        ]);
+        // $middleware->validateCsrfTokens(except: [
+        //     '/api/register',
+        // ]);
 
         //
     })
