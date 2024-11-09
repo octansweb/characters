@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\Rules\Password;
+use App\Notifications\DeepLinkedVerifyEmail;
 
 class RegistrationController extends Controller
 {
@@ -26,10 +27,12 @@ class RegistrationController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user)); // Sends the email verification link
+        // event(new Registered($user)); // Sends the email verification link
 
         // $user->sendEmailVerificationNotification();
         // $user->createToken($request->device_name)->plainTextToken;
+
+        $user->notify(new DeepLinkedVerifyEmail($user));
 
         return response()->json([
             'message' => 'Registration successful! Please check your email to verify your account.',

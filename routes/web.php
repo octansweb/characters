@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\User;
 use Inertia\Inertia;
 use Aws\Polly\PollyClient;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
@@ -31,26 +33,23 @@ Route::post('/characters/{character}/stream', [CharacterChatController::class, '
 Route::get('/google/redirect', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/google/callback', [GoogleLoginController::class, 'handleGoogleCallback'])->name('google.callback');
 
-Route::get('/test-polly', function () {
-    $client = new PollyClient([
-        'region' => env('AWS_DEFAULT_REGION'),
-        'version' => 'latest',
-        'credentials' => [
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        ]
-    ]);
+Route::get('/verify-email-app', function (Request $request) {
+    // Retrieve the user based on the id parameter
+    $user = User::findOrFail($request->id);
 
-    $preSignedUrl = $client->createSynthesizeSpeechPreSignedUrl([
-        'OutputFormat' => 'mp3',
-        'Text' => 'Hello, this is a test message.',
-        'VoiceId' => 'Matthew',
-        'Engine' => 'generative',
-    ]);
-    
-    echo "Pre-signed URL: $preSignedUrl";
-});
+    // Check if the URL is still valid and unsigned
+    if (!$request->hasValidSignature()) {
+        abort(403, 'Unauthorized or expired link.');
+    }
 
+    // Mark the user's email as verified if not already verified
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    // Redirect the user to the app's deep link
+    return redirect()->away('talkiverse://register?status=verified');
+})->name('verification.verify-app');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
