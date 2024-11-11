@@ -41,8 +41,9 @@ class GoogleLoginController extends Controller
 
         // Check if the user is on a mobile device
         if ($agent->isMobile()) {
+            $token = $newUser->createToken('mobile')->plainTextToken;
             // Redirect to the mobile URL from the environment file
-            return redirect()->away(env('GOOGLE_MOBILE_CALLBACK'));
+            return redirect()->away(env('GOOGLE_MOBILE_CALLBACK') . '?token=' . $token);
         }
 
         // Otherwise, redirect to the dashboard
