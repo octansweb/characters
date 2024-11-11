@@ -47,8 +47,10 @@ Route::get('/verify-email-app', function (Request $request) {
         $user->markEmailAsVerified();
     }
 
+    $mobileAppPostRegistrationUrl = env('MOBILE_POST_REGISTRATION_URL');
+
     // Redirect the user to the app's deep link
-    return redirect()->away('talkiverse://register?status=verified');
+    return redirect()->away($mobileAppPostRegistrationUrl);
 })->name('verification.verify-app');
 
 Route::middleware('auth')->group(function () {
