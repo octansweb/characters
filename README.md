@@ -2,6 +2,9 @@
 
 A cutting-edge AI-powered character interaction platform that brings virtual personalities to life through advanced natural language processing and voice synthesis technologies.
 
+![Chat with Dr. Photon](public/screen-01.png)
+*Engage in deep physics discussions with Dr. Photon, your personal AI physics expert*
+
 ## 🌟 Key Features
 
 ### Advanced AI Character Interactions
@@ -14,6 +17,9 @@ A cutting-edge AI-powered character interaction platform that brings virtual per
 - **Multi-Voice Support**: Multiple voice options including Olivia, Amy, Danielle, Joanna, Matthew, Ruth, and Stephen
 - **Gender-Specific Voice Mapping**: Automatic voice selection based on character gender
 - **Generative Engine**: Uses advanced neural text-to-speech for more natural inflections
+
+![Character Management Dashboard](public/screen-02.png)
+*Manage your AI characters and track your conversations in one place*
 
 ### Character Management
 - **Custom Character Creation**: Create and customize AI characters with unique personalities
