@@ -51,11 +51,15 @@ class RegistrationController extends Controller
             'voice' => 'required|string|in:Olivia,Amy,Danielle,Joanna,Matthew,Ruth,Stephen',
         ]);
 
-        // Register a new user with "temporary/auto-generated" name, email and password
+        // Generate a random string for the email
+        $randomString = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 8);
+        $uniqueId = substr(md5(uniqid(mt_rand(), true)), 0, 6);
+        $randomPassword = bin2hex(random_bytes(8));
+
         $user = User::create([
-            'name' => \fake()->name(),
-            'email' => \fake()->unique()->safeEmail(),
-            'password' => Hash::make('password'),
+            'name' => 'User_' . $uniqueId,
+            'email' => $randomString . $uniqueId . '@tempdomain.example',
+            'password' => Hash::make($randomPassword),
         ]);
 
         // Create a character for them
