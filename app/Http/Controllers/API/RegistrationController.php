@@ -53,8 +53,8 @@ class RegistrationController extends Controller
 
         // Register a new user with "temporary/auto-generated" name, email and password
         $user = User::create([
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => \fake()->name(),
+            'email' => \fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
         ]);
 
