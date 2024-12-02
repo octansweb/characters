@@ -43,7 +43,7 @@ class RegistrationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'avatar_url' => 'required|string',
             'description' => 'nullable|string',
             'personality' => 'nullable|string',
             'is_public' => 'required|boolean',
@@ -65,7 +65,7 @@ class RegistrationController extends Controller
         // Create a character for them
         $user->characters()->create([
             'name' => $request->name,
-            'avatar_url' => $request->avatar,
+            'avatar_url' => $request->avatar_url,
             'description' => $request->description,
             'personality' => $request->personality,
             'is_public' => $request->is_public,
